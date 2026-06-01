@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cal AI - Premium Calorie Tracker</title>
+    <!-- Google Fonts for a modern, aesthetic look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Dashboard View -->
+        <main id="dashboard-view" class="view active">
+            <header class="top-header">
+                <div class="user-info">
+                    <h1>Today</h1>
+                    <p id="current-date">June 1, 2026</p>
+                </div>
+                <div class="streak-badge">
+                    <i class="fa-solid fa-fire"></i>
+                    <span id="streak-count">3 Day Streak</span>
+                </div>
+            </header>
+
+            <!-- Main Calorie Ring -->
+            <section class="calorie-section">
+                <div class="progress-ring-container main-ring">
+                    <svg viewBox="0 0 150 150" class="circular-chart">
+                        <path class="circle-bg"
+                            d="M75,15 a60,60 0 0,1 0,120 a60,60 0 0,1 0,-120"
+                        />
+                        <path class="circle calorie-circle" id="calorie-progress"
+                            stroke-dasharray="0, 377"
+                            d="M75,15 a60,60 0 0,1 0,120 a60,60 0 0,1 0,-120"
+                        />
+                    </svg>
+                    <div class="ring-content">
+                        <h2 id="calories-eaten">0</h2>
+                        <p>kcal eaten</p>
+                        <p class="goal-text">of <span id="calories-goal">2000</span> goal</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Macros Rings -->
+            <section class="macros-section">
+                <div class="macro-card">
+                    <div class="macro-ring-container">
+                        <svg viewBox="0 0 50 50" class="macro-chart">
+                            <path class="circle-bg" d="M25,5 a20,20 0 0,1 0,40 a20,20 0 0,1 0,-40" />
+                            <path class="circle protein-circle" id="protein-progress" stroke-dasharray="0, 126" d="M25,5 a20,20 0 0,1 0,40 a20,20 0 0,1 0,-40" />
+                        </svg>
+                        <i class="fa-solid fa-drumstick-bite macro-icon"></i>
+                    </div>
+                    <div class="macro-info">
+                        <h3>Protein</h3>
+                        <p><span id="protein-eaten">0</span>g / <span id="protein-goal">150</span>g</p>
+                    </div>
+                </div>
+
+                <div class="macro-card">
+                    <div class="macro-ring-container">
+                        <svg viewBox="0 0 50 50" class="macro-chart">
+                            <path class="circle-bg" d="M25,5 a20,20 0 0,1 0,40 a20,20 0 0,1 0,-40" />
+                            <path class="circle carbs-circle" id="carbs-progress" stroke-dasharray="0, 126" d="M25,5 a20,20 0 0,1 0,40 a20,20 0 0,1 0,-40" />
+                        </svg>
+                        <i class="fa-solid fa-wheat-awn macro-icon"></i>
+                    </div>
+                    <div class="macro-info">
+                        <h3>Carbs</h3>
+                        <p><span id="carbs-eaten">0</span>g / <span id="carbs-goal">200</span>g</p>
+                    </div>
+                </div>
+
+                <div class="macro-card">
+                    <div class="macro-ring-container">
+                        <svg viewBox="0 0 50 50" class="macro-chart">
+                            <path class="circle-bg" d="M25,5 a20,20 0 0,1 0,40 a20,20 0 0,1 0,-40" />
+                            <path class="circle fat-circle" id="fat-progress" stroke-dasharray="0, 126" d="M25,5 a20,20 0 0,1 0,40 a20,20 0 0,1 0,-40" />
+                        </svg>
+                        <i class="fa-solid fa-droplet macro-icon"></i>
+                    </div>
+                    <div class="macro-info">
+                        <h3>Fat</h3>
+                        <p><span id="fat-eaten">0</span>g / <span id="fat-goal">65</span>g</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Food Diary -->
+            <section class="diary-section">
+                <div class="diary-header">
+                    <h2>Meals Today</h2>
+                    <button id="history-btn" class="icon-btn"><i class="fa-solid fa-chart-line"></i></button>
+                </div>
+                <div class="diary-list" id="diary-list">
+                    <!-- Meal items will be injected here via JS -->
+                    <div class="empty-state">
+                        <p>No meals logged yet. Tap the + to add food!</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Bottom spacing for FAB -->
+            <div style="height: 100px;"></div>
+        </main>
+
+        <!-- Analyze View (Hidden by default) -->
+        <main id="analyze-view" class="view">
+            <header class="modal-header">
+                <button class="back-btn" id="close-analyze-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                <h2>Analyze Food</h2>
+                <div style="width: 24px;"></div>
+            </header>
+            
+            <div class="upload-container">
+                <div id="image-preview-container" class="image-preview-container hidden">
+                    <img id="image-preview" src="" alt="Food preview">
+                </div>
+                
+                <div id="upload-prompt" class="upload-prompt">
+                    <div class="upload-icon-wrapper">
+                        <i class="fa-solid fa-camera"></i>
+                    </div>
+                    <h3>Snap or upload a photo</h3>
+                    <p>Our AI will identify the food and estimate macros.</p>
+                </div>
+
+                <div class="action-buttons">
+                    <label class="btn btn-primary">
+                        <i class="fa-solid fa-camera"></i> Take Photo
+                        <input type="file" id="camera-input" accept="image/*" capture="environment" hidden>
+                    </label>
+                    <label class="btn btn-secondary">
+                        <i class="fa-solid fa-image"></i> Gallery
+                        <input type="file" id="gallery-input" accept="image/*" hidden>
+                    </label>
+                </div>
+            </div>
+
+            <div id="analysis-loading" class="loading-state hidden">
+                <div class="spinner"></div>
+                <p>Analyzing with AI...</p>
+                <p class="subtext">Scanning for calories and macros</p>
+            </div>
+
+            <div id="analysis-result" class="result-state hidden">
+                <h3 id="result-food-name">Chicken Salad</h3>
+                <div class="result-macros">
+                    <div class="r-macro"><span id="r-cal" class="accent-cal">450</span><br>kcal</div>
+                    <div class="r-macro"><span id="r-pro" class="accent-pro">40g</span><br>Protein</div>
+                    <div class="r-macro"><span id="r-car" class="accent-car">15g</span><br>Carbs</div>
+                    <div class="r-macro"><span id="r-fat" class="accent-fat">22g</span><br>Fat</div>
+                </div>
+                <button id="log-food-btn" class="btn btn-primary full-width">Log this meal</button>
+                <button id="retry-btn" class="btn btn-text full-width">Try another photo</button>
+            </div>
+        </main>
+
+        <!-- Floating Action Button -->
+        <button id="fab-add" class="fab">
+            <div class="fab-inner">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+        </button>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">Meal logged successfully!</div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "cal-ai-clone",
+  "version": "1.0.0",
+  "description": "Cal AI Clone - 8x Engineer Contest",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {}
+}
