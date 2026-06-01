@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cal AI - Premium Calorie Tracker</title>
-    <!-- Google Fonts for a modern, aesthetic look -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for History Graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -96,17 +98,14 @@
             <section class="diary-section">
                 <div class="diary-header">
                     <h2>Meals Today</h2>
-                    <button id="history-btn" class="icon-btn"><i class="fa-solid fa-chart-line"></i></button>
                 </div>
                 <div class="diary-list" id="diary-list">
-                    <!-- Meal items will be injected here via JS -->
                     <div class="empty-state">
                         <p>No meals logged yet. Tap the + to add food!</p>
                     </div>
                 </div>
             </section>
             
-            <!-- Bottom spacing for FAB -->
             <div style="height: 100px;"></div>
         </main>
 
@@ -121,6 +120,11 @@
             <div class="upload-container">
                 <div id="image-preview-container" class="image-preview-container hidden">
                     <img id="image-preview" src="" alt="Food preview">
+                    <!-- Laser Scanner Animation Overlay -->
+                    <div id="scanner-overlay" class="scanner-overlay hidden">
+                        <div class="scanner-line"></div>
+                        <div class="scanner-box"></div>
+                    </div>
                 </div>
                 
                 <div id="upload-prompt" class="upload-prompt">
@@ -128,11 +132,11 @@
                         <i class="fa-solid fa-camera"></i>
                     </div>
                     <h3>Snap or upload a photo</h3>
-                    <p>Our AI will identify the food and estimate macros.</p>
+                    <p>Our AI will identify the food and estimate macros instantly.</p>
                 </div>
 
                 <div class="action-buttons">
-                    <label class="btn btn-primary">
+                    <label class="btn btn-primary glow-effect">
                         <i class="fa-solid fa-camera"></i> Take Photo
                         <input type="file" id="camera-input" accept="image/*" capture="environment" hidden>
                     </label>
@@ -146,10 +150,10 @@
             <div id="analysis-loading" class="loading-state hidden">
                 <div class="spinner"></div>
                 <p>Analyzing with AI...</p>
-                <p class="subtext">Scanning for calories and macros</p>
+                <p class="subtext glow-text">Extracting nutrition data</p>
             </div>
 
-            <div id="analysis-result" class="result-state hidden">
+            <div id="analysis-result" class="result-state hidden slide-up-anim">
                 <h3 id="result-food-name">Chicken Salad</h3>
                 <div class="result-macros">
                     <div class="r-macro"><span id="r-cal" class="accent-cal">450</span><br>kcal</div>
@@ -157,21 +161,101 @@
                     <div class="r-macro"><span id="r-car" class="accent-car">15g</span><br>Carbs</div>
                     <div class="r-macro"><span id="r-fat" class="accent-fat">22g</span><br>Fat</div>
                 </div>
-                <button id="log-food-btn" class="btn btn-primary full-width">Log this meal</button>
+                <button id="log-food-btn" class="btn btn-primary full-width glow-effect">Log this meal</button>
                 <button id="retry-btn" class="btn btn-text full-width">Try another photo</button>
             </div>
         </main>
 
-        <!-- Floating Action Button -->
-        <button id="fab-add" class="fab">
-            <div class="fab-inner">
-                <i class="fa-solid fa-plus"></i>
+        <!-- History View -->
+        <main id="history-view" class="view">
+            <header class="top-header">
+                <div class="user-info">
+                    <h1>History</h1>
+                    <p>Your weekly progress</p>
+                </div>
+            </header>
+            
+            <section class="chart-container">
+                <canvas id="weeklyChart"></canvas>
+            </section>
+
+            <section class="stats-cards">
+                <div class="stat-card">
+                    <i class="fa-solid fa-fire accent-cal"></i>
+                    <div class="stat-info">
+                        <h4>Avg Calories</h4>
+                        <p id="avg-cal">1850 kcal</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fa-solid fa-dumbbell accent-pro"></i>
+                    <div class="stat-info">
+                        <h4>Avg Protein</h4>
+                        <p id="avg-pro">142g</p>
+                    </div>
+                </div>
+            </section>
+            <div style="height: 100px;"></div>
+        </main>
+
+        <!-- Profile View -->
+        <main id="profile-view" class="view">
+            <header class="top-header">
+                <div class="user-info">
+                    <h1>Profile</h1>
+                    <p>Set your goals</p>
+                </div>
+            </header>
+
+            <section class="settings-form">
+                <div class="form-group">
+                    <label>Daily Calorie Goal</label>
+                    <input type="number" id="set-cal" value="2000">
+                </div>
+                <div class="form-group">
+                    <label>Protein Goal (g)</label>
+                    <input type="number" id="set-pro" value="150">
+                </div>
+                <div class="form-group">
+                    <label>Carbs Goal (g)</label>
+                    <input type="number" id="set-car" value="200">
+                </div>
+                <div class="form-group">
+                    <label>Fat Goal (g)</label>
+                    <input type="number" id="set-fat" value="65">
+                </div>
+                <button id="save-goals-btn" class="btn btn-primary full-width glow-effect" style="margin-top: 16px;">Save Goals</button>
+            </section>
+            <div style="height: 100px;"></div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-target="dashboard-view">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" data-target="history-view">
+                <i class="fa-solid fa-chart-simple"></i>
+                <span>History</span>
+            </button>
+            
+            <!-- Floating Action Button seamlessly integrated -->
+            <div class="nav-fab-wrapper">
+                <button id="nav-add-btn" class="nav-fab">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
             </div>
-        </button>
+
+            <button class="nav-item" data-target="profile-view">
+                <i class="fa-regular fa-user"></i>
+                <span>Profile</span>
+            </button>
+        </nav>
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="toast hidden">Meal logged successfully!</div>
+    <div id="toast" class="toast hidden">Saved successfully!</div>
 
     <script src="app.js"></script>
 </body>
